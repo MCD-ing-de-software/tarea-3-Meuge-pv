@@ -114,6 +114,14 @@ class TestDataCleaner(unittest.TestCase):
         - Verificar que en el DataFrame resultante los valores de "name" no tienen espacios al inicio/final (usar self.assertEqual para comparar valores específicos como strings individuales - unittest es suficiente)
         - Verificar que las columnas no especificadas (ej: "city") permanecen sin cambios (si comparas Series completas, usar pandas.testing.assert_series_equal() ya que maneja mejor los índices y tipos de Pandas; si comparas valores individuales, self.assertEqual es suficiente)
         """
+        cleaner = DataCleaner()
+        df = make_sample_df()
+        df["name"] = df["name"].astype("string")
+        df2 = df.copy()
+        result = cleaner.trim_strings(df, ["name"])
+        self.assertEqual(df["name"].iloc[0], " Alice ", "El Dataframe original no debería ser modificado")
+        self.assertEqual(result["name"].iloc[0], "Alice", "Los espacios en blanco deberían ser eliminados")
+        pdt.assert_series_equal(result["city"], df2["city"],"Las columnas no especificadas deberían permanecer sin cambios")
 
     def test_trim_strings_raises_typeerror_for_non_string_column(self):
         """Test que verifica que el método trim_strings lanza un TypeError cuando
